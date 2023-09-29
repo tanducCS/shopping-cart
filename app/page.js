@@ -119,7 +119,7 @@ export default function Home() {
   return (
       <main className="flex min-h-screen flex-col items-center justify-between p-32 bg-gradient-to-r from-purple-500 to-pink-500" >
       <div className='wrapper grid grid-cols-2 gap-20 max-w-3xl'>
-          <div className='productwrapper  border-2 rounded-3xl h-[32rem] '>
+          <div className='productwrapper  rounded-3xl h-[32rem] bg-gray-300 drop-shadow-2xl'>
             <div className='mx-10 sticky top-0 '>
               <img src='./nike.png' className='w-24  ' ></img>
               <h1 className='text-3xl font-bold h-1/5 mb-3'>Our Products  </h1>
@@ -154,10 +154,10 @@ export default function Home() {
             </div>
             
           </div>
-          <div className='cartWrapper border-2 rounded-3xl h-[32rem]'>
+          <div className='cartWrapper  rounded-3xl h-[32rem] bg-gray-300 drop-shadow-2xl '>
           <div className='mx-5 sticky top-0 '>
               <img src='./nike.png' className='w-24  ' ></img>
-              <div className='flex flex-row justify-between items-center'>
+              <div className='flex flex-row justify-between items-center mb-3 '>
                 <h1 className='text-3xl font-bold h-1/5 '>Your Carts </h1>
                 <h1 className='text-3xl font-bold h-1/5' >${totalPrice}</h1>
               </div>
@@ -181,7 +181,7 @@ export default function Home() {
                         <div className='flex flex-row justify-between'>
                           <div className='flex flex-row justify-between items-center'>
                             
-                          <button className="bg-slate-200 hover:bg-slate-300 text-white font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center"  onClick={() => removeFromCart(product)}>
+                          <button className="bg-slate-200 hover:bg-slate-300  font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center"  onClick={() => removeFromCart(product)}>
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                             <path d="M6.75 9.25a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z" />
                           </svg>
@@ -191,7 +191,7 @@ export default function Home() {
 
                           <span className='m-2 justify-items-center'>{product.quantity}</span>
 
-                          <button className="bg-slate-200 hover:bg-slate-300 text-white font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center" onClick={() => addToCart(product)}>
+                          <button className="bg-slate-200 hover:bg-slate-300  font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center" onClick={() => addToCart(product)}>
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                             <path d="M10.75 6.75a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" />
                           </svg>
@@ -199,7 +199,7 @@ export default function Home() {
 
 
                           </div>
-                          <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center" onClick = {() => deleteFromCart(product)}>
+                          <button class="bg-yellow-500 hover:bg-yellow-700  font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center" onClick = {() => deleteFromCart(product)}>
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                             <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" />
                           </svg>
