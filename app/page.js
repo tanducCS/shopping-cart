@@ -1,113 +1,286 @@
+"use client"
+import { StoreProvider } from '@/redux/StoreProvider';
 import Image from 'next/image'
+import React,{useState,useEffect} from 'react'
 
 export default function Home() {
+
+  const [cart, setCart] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    // Tính tổng giá trị đơn hàng và cập nhật state
+    let newTotalPrice = 0;
+      for (const product of cart) {
+        const productTotal = product.price * product.quantity;
+        newTotalPrice += productTotal;
+      }
+    setTotalPrice(newTotalPrice.toFixed(2));
+  }, [cart]); // Sẽ chạy lại khi giỏ hàng (cart) thay đổi
+
+
+  useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem('cart'));
+    if (savedCart) {
+      setCart(savedCart.cart);
+      setTotalItems(savedCart.totalItems);
+    }
+  }, []);
+
+  // Lưu trạng thái giỏ hàng vào localStorage khi có thay đổi
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify({ cart, totalItems }));
+  }, [cart, totalItems]);
+
+
+  const addToCart = (product) => {
+    // Tạo một bản sao mới của danh sách sản phẩm trong giỏ hàng
+    const newCart = [...cart];
+
+    // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+    const existingProductIndex = newCart.findIndex((item) => item.id === product.id);
+
+    if (existingProductIndex !== -1) {
+      // Nếu sản phẩm đã tồn tại trong giỏ hàng, tăng số lượng sản phẩm đó lên
+      newCart[existingProductIndex].quantity += 1;
+    } else {
+      // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm vào giỏ hàng
+      newCart.push({ ...product, quantity: 1 });
+    }
+
+    // Cập nhật state giỏ hàng và tổng số lượng sản phẩm
+    setCart(newCart);
+    setTotalItems(totalItems + 1);
+  };
+
+  const removeFromCart = (product) => {
+    // Tạo một bản sao mới của danh sách sản phẩm trong giỏ hàng
+    const newCart = [...cart];
+  
+    // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+    const existingProductIndex = newCart.findIndex((item) => item.id === product.id);
+  
+    if (existingProductIndex !== -1) {
+      // Giảm số lượng sản phẩm đó đi 1
+      if (newCart[existingProductIndex].quantity > 1) {
+        newCart[existingProductIndex].quantity -= 1;
+      } else {
+        // Nếu số lượng là 1, xoá sản phẩm khỏi giỏ hàng
+        newCart.splice(existingProductIndex, 1);
+      }
+  
+      // Cập nhật state giỏ hàng và tổng số lượng sản phẩm
+      setCart(newCart);
+      setTotalItems(totalItems - 1);
+    }
+  };
+   
+  const deleteFromCart = (product) => {
+    // Tạo một bản sao mới của danh sách sản phẩm trong giỏ hàng
+    const newCart = [...cart];
+  
+    // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+    const existingProductIndex = newCart.findIndex((item) => item.id === product.id);
+  
+    if (existingProductIndex !== -1) {
+      // Xóa sản phẩm khỏi giỏ hàng
+      newCart.splice(existingProductIndex, 1);
+  
+      // Cập nhật state giỏ hàng và tổng số lượng sản phẩm
+      setCart(newCart);
+      setTotalItems(totalItems - product.quantity);
+    }
+  };
+   
+
+  const data = {
+    shoes: [
+      {
+        "id": 1,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/air-zoom-pegasus-36-mens-running-shoe-wide-D24Mcz-removebg-preview.png",
+        "name": "Nike Air Zoom Pegasus 36",
+        "description": "The iconic Nike Air Zoom Pegasus 36 offers more cooling and mesh that targets breathability across high-heat areas. A slimmer heel collar and tongue reduce bulk, while exposed cables give you a snug fit at higher speeds.",
+        "price": 108.97,
+        "color": "#e1e7ed"
+      },
+      {
+        "id": 2,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/air-zoom-pegasus-36-shield-mens-running-shoe-24FBGb__1_-removebg-preview.png",
+        "name": "Nike Air Zoom Pegasus 36 Shield",
+        "description": "The Nike Air Zoom Pegasus 36 Shield gets updated to conquer wet routes. A water-repellent upper combines with an outsole that helps create grip on wet surfaces, letting you run in confidence despite the weather.",
+        "price": 89.97,
+        "color": "#4D317F"
+      },
+      {
+        "id": 3,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/cruzrone-unisex-shoe-T2rRwS-removebg-preview.png",
+        "name": "Nike CruzrOne",
+        "description": "Designed for steady, easy-paced movement, the Nike CruzrOne keeps you going. Its rocker-shaped sole and plush, lightweight cushioning let you move naturally and comfortably. The padded collar is lined with soft wool, adding luxury to every step, while mesh details let your foot breathe. There’s no finish line—there’s only you, one step after the next.",
+        "price": 100.97,
+        "color": "#E8D026"
+      },
+      {
+        "id": 4,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/epic-react-flyknit-2-mens-running-shoe-2S0Cn1-removebg-preview.png",
+        "name": "Nike Epic React Flyknit 2",
+        "description": "The Nike Epic React Flyknit 2 takes a step up from its predecessor with smooth, lightweight performance and a bold look. An updated Flyknit upper conforms to your foot with a minimal, supportive design. Underfoot, durable Nike React technology defies the odds by being both soft and responsive, for comfort that lasts as long as you can run.",
+        "price": 89.97,
+        "color": "#FD584A"
+      },
+      {
+        "id": 5,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/odyssey-react-flyknit-2-mens-running-shoe-T3VG7N-removebg-preview.png",
+        "name": "Nike Odyssey React Flyknit 2",
+        "description": "The Nike Odyssey React Flyknit 2 provides a strategic combination of lightweight Flyknit construction and synthetic material for support. Underfoot, Nike React cushioning delivers a soft, springy ride for a route that begs to be crushed.",
+        "price": 71.97,
+        "color": "#D4D7D6"
+      },
+      {
+        "id": 6,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/react-infinity-run-flyknit-mens-running-shoe-RQ484B__2_-removebg-preview.png",
+        "name": "Nike React Infinity Run Flyknit",
+        "description": "A pioneer in the running shoe frontier honors the original pioneer of running culture with the Nike React Infinity Run Flyknit. Blue Ribbon Track Club-inspired details pay homage to the haven that was created before running was even popular. This running shoe is designed to help reduce injury and keep you on the run. More foam and improved upper details provide a secure and cushioned feel.",
+        "price": 160.0,
+        "color": "#F2F5F4"
+      },
+      {
+        "id": 7,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/react-miler-mens-running-shoe-DgF6nr-removebg-preview.png",
+        "name": "Nike React Miler",
+        "description": "The Nike React Miler gives you trusted stability for miles with athlete-informed performance. Made for dependability on your long runs, its intuitive design offers a locked-in fit and a durable feel.",
+        "price": 130.0,
+        "color": "#22AFDC"
+      },
+      {
+        "id": 8,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/renew-ride-mens-running-shoe-JkhdfR-removebg-preview.png",
+        "name": "Nike Renew Ride",
+        "description": "The Nike Renew Ride helps keep the committed runner moving with plush cushioning. Firm support at the outsole helps you maintain stability no matter the distance.",
+        "price": 60.97,
+        "color": "#B50320"
+      },
+      {
+        "id": 9,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/vaporfly-4-flyknit-running-shoe-v7G3FB-removebg-preview.png",
+        "name": "Nike Vaporfly 4% Flyknit",
+        "description": "Built to meet the exacting needs of world-class marathoners, Nike Vaporfly 4% Flyknit is designed for record-breaking speed. The Flyknit upper delivers breathable support, while the responsive foam and full-length plate provide incredible energy return for all 26.2.",
+        "price": 187.97,
+        "color": "#3569A1"
+      },
+      {
+        "id": 10,
+        "image": "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1315882/zoom-fly-3-premium-mens-running-shoe-XhzpPH-removebg-preview.png",
+        "name": "Nike Zoom Fly 3 Premium",
+        "description": "Inspired by the Vaporfly, the Nike Zoom Fly 3 Premium gives distance runners race-day comfort and durability. The power of a carbon fiber plate keeps you in the running mile after mile.",
+        "price": 160.0,
+        "color": "#54D4C9"
+      }
+    ]
+  }
+
+  const products = data.shoes
+  
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+      <main className="flex min-h-screen flex-col items-center justify-between p-32 bg-gradient-to-r from-purple-500 to-pink-500" >
+      <div className='wrapper grid grid-cols-2 gap-20 max-w-3xl'>
+          <div className='productwrapper  border-2 rounded-3xl h-[32rem] '>
+            <div className='mx-10 sticky top-0 '>
+              <img src='./nike.png' className='w-24  ' ></img>
+              <h1 className='text-3xl font-bold h-1/5 mb-3'>Our Products  </h1>
+            </div>
+            <div className='listProducts mx-10 h-4/5 overflow-scroll no-scrollbar'>
+            {
+              products.map((product)=>(
+                <div key={product.id} className='mb-20' >
+                    <img src={product.image} alt='img' style={{backgroundColor: product.color}} className='rounded-3xl mb-4' />
+                    <h4 className='font-bold text-xl mb-4'>{product.name}</h4>
+                    <h5 className='font-normal text-base mb-5'>{product.description}</h5>
+                    <div className='flex flex-row justify-between'>
+                      <h4 className='font-bold text-xl'>${product.price}</h4>
+                      {cart.some((item) => item.id === product.id) ? (
+                        <button className="bg-yellow-500  font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                            <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <button
+                          className='bg-yellow-500 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded-full'
+                          onClick={() => addToCart(product)}
+                        >
+                          ADD TO CART
+                        </button>
+                      )}
+                    </div>
+                </div>
+              ))
+            }
+            </div>
+            
+          </div>
+          <div className='cartWrapper border-2 rounded-3xl h-[32rem]'>
+          <div className='mx-5 sticky top-0 '>
+              <img src='./nike.png' className='w-24  ' ></img>
+              <div className='flex flex-row justify-between items-center'>
+                <h1 className='text-3xl font-bold h-1/5 '>Your Carts </h1>
+                <h1 className='text-3xl font-bold h-1/5' >${totalPrice}</h1>
+              </div>
+            </div>
+            <div className='listCarts mx-5 h-4/5 overflow-scroll no-scrollbar'>
+            {
+              totalItems === 0 ? (
+                <p className='text-sm'>Your Cart is empty</p>
+              ) : null // hoặc có thể thay bằng phần tử JSX khác để xử lý trường hợp ngược lại
+            }
+              {
+                cart.map((product) => {
+                  return (
+                    <div key={product.id} className='flex flex-grow justify-between'>
+                      <div className='w-1/3 '>
+                        <img src={product.image} style={{backgroundColor: product.color}} className='rounded-3xl mb-4'></img>
+                      </div>
+                      <div className='w-2/3 ml-3'>
+                        <p className='font-bold'>{product.name}</p>
+                        <p className='font-bold '>${product.price}</p>
+                        <div className='flex flex-row justify-between'>
+                          <div className='flex flex-row justify-between items-center'>
+                            
+                          <button className="bg-slate-200 hover:bg-slate-300 text-white font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center"  onClick={() => removeFromCart(product)}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                            <path d="M6.75 9.25a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z" />
+                          </svg>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+                          </button>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+                          <span className='m-2 justify-items-center'>{product.quantity}</span>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
+                          <button className="bg-slate-200 hover:bg-slate-300 text-white font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center" onClick={() => addToCart(product)}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                            <path d="M10.75 6.75a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" />
+                          </svg>
+                          </button>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+
+                          </div>
+                          <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full text-black font-bold py-2 px-4  inline-flex items-center" onClick = {() => deleteFromCart(product)}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                            <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clipRule="evenodd" />
+                          </svg>
+                          </button>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  );
+                })
+              }
+          
+            </div>
+          </div>
+    </div>
+      
     </main>
   )
 }
